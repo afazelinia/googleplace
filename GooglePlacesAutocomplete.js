@@ -276,7 +276,7 @@ export default class GooglePlacesAutocomplete extends Component {
                 }
             };
 
-            request.open('GET', 'https://maps.googleapis.com/maps/api/place/details/json?' + Qs.stringify({
+            request.open('GET', '/api/maps/place/details/json?' + Qs.stringify({
                     key: this.props.query.key,
                     placeid: rowData.place_id,
                     language: this.props.query.language,
@@ -418,13 +418,13 @@ export default class GooglePlacesAutocomplete extends Component {
             let url = '';
             if (this.props.nearbyPlacesAPI === 'GoogleReverseGeocoding') {
                 // your key must be allowed to use Google Maps Geocoding API
-                url = 'https://maps.googleapis.com/maps/api/geocode/json?' + Qs.stringify({
+                url = '/api/maps/geocode/json?' + Qs.stringify({
                         latlng: latitude + ',' + longitude,
                         key: this.props.query.key,
                         ...this.props.GoogleReverseGeocodingQuery,
                     });
             } else {
-                url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?' + Qs.stringify({
+                url = '/api/maps/place/nearbysearch/json?' + Qs.stringify({
                         location: latitude + ',' + longitude,
                         key: this.props.query.key,
                         ...this.props.GooglePlacesSearchQuery,
