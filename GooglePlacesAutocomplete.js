@@ -16,6 +16,8 @@ import {
 } from 'react-native';
 import Qs from 'qs';
 import debounce from 'lodash.debounce';
+import { MapPin } from 'react-feather';
+import YourLocation from '../../src/client/components/search/YourLocation';
 
 const WINDOW = Dimensions.get('window');
 
@@ -472,8 +474,8 @@ export default class GooglePlacesAutocomplete extends Component {
                     // console.warn("google places autocomplete: request could not be completed or has been aborted");
                 }
             };
-            request.open('GET', 'https://maps.googleapis.com/maps/api/place/autocomplete/json?&input=' + encodeURIComponent(text) + '&' + Qs.stringify(this.props.query));
-            if (this.props.query.origin !== null) {
+            request.open('GET', '/api/maps/place/autocomplete/json?&input=' + encodeURIComponent(text) + '&' + Qs.stringify(this.props.query));
+            if (this.props.query.origin != null) {
                 request.setRequestHeader('Referer', this.props.query.origin)
             }
 
@@ -558,16 +560,17 @@ export default class GooglePlacesAutocomplete extends Component {
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
                 showsVerticalScrollIndicator={false}>
-              <TouchableHighlight
-                  style={{ width: WINDOW.width }}
-                  onPress={() => this._onPress(rowData)}
-                  underlayColor={this.props.listUnderlayColor || "#c8c7cc"}
-              >
-                <View style={[this.props.suppressDefaultStyles ? {} : defaultStyles.row, this.props.styles.row, rowData.isPredefinedPlace ? this.props.styles.specialItemRow : {}]}>
-                    {this._renderLoader(rowData)}
-                    {this._renderRowData(rowData)}
-                </View>
-              </TouchableHighlight>
+                <TouchableHighlight
+                    style={{ width: WINDOW.width }}
+                    onPress={() => this._onPress(rowData)}
+                    underlayColor={this.props.listUnderlayColor || "#c8c7cc"}
+                >
+                    <View style={[this.props.suppressDefaultStyles ? {} : defaultStyles.row, this.props.styles.row, rowData.isPredefinedPlace ? this.props.styles.specialItemRow : {}]}>
+                        {this._renderLoader(rowData)}
+                        {this._renderRowData(rowData)}
+                        <MapPin size="25" color="#B9B9BB" style={{ paddingRight: 0, paddingLeft: 0 }} />
+                    </View>
+                </TouchableHighlight>
             </ScrollView>
         );
     }
@@ -603,6 +606,11 @@ export default class GooglePlacesAutocomplete extends Component {
             <View
                 style={[this.props.suppressDefaultStyles ? {} : defaultStyles.row, defaultStyles.poweredContainer, this.props.styles.poweredContainer]}
             >
+                <Image
+                    style={[this.props.suppressDefaultStyles ? {} : defaultStyles.powered, this.props.styles.powered]}
+                    resizeMode={Image.resizeMode.contain}
+                    source={require('./images/powered_by_google_on_white.png')}
+                />
             </View>
         );
     }
@@ -644,18 +652,19 @@ export default class GooglePlacesAutocomplete extends Component {
             Math.random().toString(36).substr(2, 10)
         );
         if ((this.state.text !== '' || this.props.predefinedPlaces.length || this.props.currentLocation === false) && this.state.listViewDisplayed === true) {
-          return (
+            return (
                 <View>
-                <FlatList
-                    style={[this.props.suppressDefaultStyles ? {} : defaultStyles.listView, this.props.styles.listView]}
-                    data={this.state.dataSource}
-                    keyExtractor={keyGenerator}
-                    extraData={[this.state.dataSource, this.props]}
-                    ItemSeparatorComponent={this._renderSeparator}
-                    renderItem={({ item }) => this._renderRow(item)}
-                    ListFooterComponent={this._renderPoweredLogo}
-                    {...this.props}
-                />
+                    <YourLocation handleSelectYourLocation={this.handleSelectYourLocation}/>
+                    <FlatList
+                        style={[this.props.suppressDefaultStyles ? {} : defaultStyles.listView, this.props.styles.listView]}
+                        data={this.state.dataSource}
+                        keyExtractor={keyGenerator}
+                        extraData={[this.state.dataSource, this.props]}
+                        ItemSeparatorComponent={this._renderSeparator}
+                        renderItem={({ item }) => this._renderRow(item)}
+                        ListFooterComponent={this._renderPoweredLogo}
+                        {...this.props}
+                    />
                 </View>
             );
         }
